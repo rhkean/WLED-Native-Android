@@ -13,6 +13,7 @@ class UserPreferencesSerializer : Serializer<UserPreferences> {
         .setShowOfflineLast(true)
         .setSendCrashData(false)
         .setSendPerformanceData(false)
+        .setBleDiscovery(true)
         .build()
 
     override suspend fun readFrom(input: InputStream): UserPreferences {

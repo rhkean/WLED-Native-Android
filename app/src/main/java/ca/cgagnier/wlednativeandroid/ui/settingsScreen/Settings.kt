@@ -61,12 +61,16 @@ fun Settings(
                     ListingOptions(
                         showHiddenDevices = settingsState.showHiddenDevices,
                         isAutoDiscoveryEnabled = settingsState.isAutoDiscoveryEnabled,
+                        isBleDiscoveryEnabled = settingsState.isBleDiscoveryEnabled,
                         showOfflineDevicesLast = settingsState.showOfflineLast,
                         setShowHiddenDevices = {
                             viewModel.setShowHiddenDevices(it)
                         },
                         setAutoDiscover = {
                             viewModel.setAutoDiscover(it)
+                        },
+                        setBleDiscover = {
+                            viewModel.setBleDiscover(it)
                         },
                         setShowOfflineDevicesLast = {
                             viewModel.setShowOfflineDevicesLast(it)
@@ -151,9 +155,11 @@ fun RadioRow(
 fun ListingOptions(
     showHiddenDevices: Boolean,
     isAutoDiscoveryEnabled: Boolean,
+    isBleDiscoveryEnabled: Boolean,
     showOfflineDevicesLast: Boolean,
     setShowHiddenDevices: (Boolean) -> Unit,
     setAutoDiscover: (Boolean) -> Unit,
+    setBleDiscover: (Boolean) -> Unit,
     setShowOfflineDevicesLast: (Boolean) -> Unit,
 ) {
     Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -172,6 +178,11 @@ fun ListingOptions(
                 label = stringResource(R.string.automatically_discover_new_devices),
                 checked = isAutoDiscoveryEnabled,
                 onCheckedChange = setAutoDiscover
+            )
+            SwitchRow(
+                label = stringResource(R.string.allow_ble_discovery),
+                checked = isBleDiscoveryEnabled,
+                onCheckedChange = setBleDiscover
             )
             SwitchRow(
                 label = stringResource(R.string.show_offline_devices_last),

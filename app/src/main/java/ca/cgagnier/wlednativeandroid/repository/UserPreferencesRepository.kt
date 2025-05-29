@@ -3,11 +3,13 @@ package ca.cgagnier.wlednativeandroid.repository
 import android.util.Log
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.map
+import java.lang.System
 
 class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences>) {
 
     val themeMode get() = dataStore.data.map { it.theme }
     val autoDiscovery get() = dataStore.data.map { it.automaticDiscovery }
+    val bleDiscovery get() = dataStore.data.map { it.bleDiscovery }
     val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
     val showHiddenDevices get() = dataStore.data.map { it.showHiddenDevices }
     val lastUpdateCheckDate get() = dataStore.data.map { it.lastUpdateCheckDate }
@@ -58,6 +60,16 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
             it.toBuilder()
                 .setLastUpdateCheckDate(lastUpdateCheckDate)
                 .setDateLastWritten(System.currentTimeMillis())
+                .build()
+        }
+    }
+
+    suspend fun updateBleDiscovery(bleDiscovery: Boolean) {
+        Log.d(TAG, "updateBleDiscovery")
+        dataStore.updateData {
+            it.toBuilder()
+                .setBleDiscovery(bleDiscovery)
+                .setDateLastWritten(java.lang.System.currentTimeMillis())
                 .build()
         }
     }
