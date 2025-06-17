@@ -75,4 +75,11 @@
     <string name="downloading_file">Téléchargement en cours</string>
     <string name="help">WLED Aide</string>
     <string name="support_me">Supporter Moustachauve</string>
+    <string name="location_permission_required">Autorisation de localisation requise</string>
+    <string name="location_permission_rationale">À partir d\'Android 6, le système exige que les applications aient accès à la localisation afin de rechercher des appareils BLE.\n\nVotre localisation n\'est jamais utilisée, sauf pour permettre à l\'application d\'effectuer des analyses BLE.</string>
+    <string name="bluetooth_permission_required">Autorisation requise pour les appareils à proximité</string>
+    <string name="bluetooth_permission_rationale">À partir d\'Android 12, le système exige que les applications aient accès aux appareils à proximité afin de rechercher et de se connecter aux appareils BLE.</string>
+    <string name="request_permissions">Demander des autorisations</string>
+    <string name="please_grant_relevant_permissions">Veuillez accorder les autorisations requises</string>
+    <string name="scan_for_ble_devices">Rechercher des appareils Bluetooth</string>
 </resources>
