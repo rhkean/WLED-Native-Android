@@ -9,7 +9,7 @@ import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Device
 
 
-class DeviceDiscovery(
+class WiFiDeviceDiscovery(
     val context: Context,
     val onDeviceDiscovered: (Device) -> Unit
 ) {

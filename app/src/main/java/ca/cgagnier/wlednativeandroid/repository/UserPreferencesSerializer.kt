@@ -10,6 +10,7 @@ class UserPreferencesSerializer : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.newBuilder()
         .setThemeValue(ThemeSettings.Auto_VALUE)
         .setAutomaticDiscovery(true)
+        .setScanForBleDevices(false)
         .setShowOfflineLast(true)
         .setSendCrashData(false)
         .setSendPerformanceData(false)

@@ -21,17 +21,20 @@ class SettingsViewModel @Inject constructor(
 
     private val theme = preferencesRepository.themeMode
     private val autoDiscovery = preferencesRepository.autoDiscovery
+    private val scanForBleDevices = preferencesRepository.scanForBleDevices
     private val showOfflineDevicesLast = preferencesRepository.showOfflineDevicesLast
     private val showHiddenDevices = preferencesRepository.showHiddenDevices
 
     val settingsState = combine(
         autoDiscovery,
+        scanForBleDevices,
         showOfflineDevicesLast,
         showHiddenDevices,
         theme,
-    ) { autoDiscovery, showOfflineDevicesLast, showHiddenDevices, theme ->
+    ) { autoDiscovery, scanForBleDevices, showOfflineDevicesLast, showHiddenDevices, theme ->
         SettingsState(
             isAutoDiscoveryEnabled = autoDiscovery,
+            scanForBleDevices = scanForBleDevices,
             showOfflineLast = showOfflineDevicesLast,
             showHiddenDevices = showHiddenDevices,
             theme = theme,
@@ -40,6 +43,9 @@ class SettingsViewModel @Inject constructor(
 
     fun setAutoDiscover(enabled: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         preferencesRepository.updateAutoDiscovery(enabled)
+    }
+    fun setScanForBleDevices(enabled: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        preferencesRepository.updateScanForBleDevices(enabled)
     }
     fun setShowOfflineDevicesLast(enabled: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         preferencesRepository.updateShowOfflineDeviceLast(enabled)
@@ -56,6 +62,7 @@ class SettingsViewModel @Inject constructor(
 @Stable
 data class SettingsState(
     val isAutoDiscoveryEnabled : Boolean = true,
+    val scanForBleDevices : Boolean = false,
     val showOfflineLast : Boolean = true,
     val showHiddenDevices : Boolean = false,
     val theme: ThemeSettings = ThemeSettings.UNRECOGNIZED,

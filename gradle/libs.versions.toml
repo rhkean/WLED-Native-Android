@@ -38,6 +38,7 @@ roomVersion = "2.7.1"
 runtimeLivedata = "1.8.0"
 semver4j = "3.1.0"
 webkit = "1.13.0"
+accompanistPermissions = "0.37.3"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
@@ -93,6 +94,7 @@ protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlin-coroutines-adapter = { module = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter", version.ref = "retrofit2KotlinCoroutinesAdapter" }
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

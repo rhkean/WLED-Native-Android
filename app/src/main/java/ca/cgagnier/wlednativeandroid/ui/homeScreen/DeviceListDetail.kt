@@ -60,16 +60,17 @@ import ca.cgagnier.wlednativeandroid.ui.homeScreen.detail.DeviceDetail
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceAdd.DeviceAdd
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.deviceEdit.DeviceEdit
 import ca.cgagnier.wlednativeandroid.ui.homeScreen.list.DeviceList
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.launch
 
 private const val TAG = "screen_DeviceListDetail"
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun DeviceListDetail(
     modifier: Modifier = Modifier,
     openSettings: () -> Unit,
-    viewModel: DeviceListDetailViewModel = hiltViewModel(),
+    viewModel: DeviceListDetailViewModel = hiltViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
@@ -99,13 +100,13 @@ fun DeviceListDetail(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 Log.i(TAG, "== ON RESUME ==")
-                viewModel.startDiscoveryServiceTimed()
+                viewModel.startDiscoveryServicesTimed()
                 viewModel.startRefreshDevicesLoop()
             }
             if (event == Lifecycle.Event.ON_PAUSE) {
                 Log.i(TAG, "== ON PAUSE ==")
                 viewModel.stopRefreshDevicesLoop()
-                viewModel.stopDiscoveryService()
+                viewModel.stopDiscoveryServices()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -182,7 +183,7 @@ fun DeviceListDetail(
                             },
                             onRefresh = {
                                 viewModel.refreshDevices(silent = false)
-                                viewModel.startDiscoveryServiceTimed()
+                                viewModel.startDiscoveryServicesTimed()
                             },
                             onItemEdit = {
                                 navigateToDeviceDetail(it)
@@ -228,7 +229,6 @@ fun DeviceListDetail(
                     }
                 }
             )
-
         }
     }
 
@@ -387,7 +387,7 @@ private fun AddDeviceBottomSheet(
                         onDismissRequest()
                     }
                 }
-            },
+            }
         )
     }
 }

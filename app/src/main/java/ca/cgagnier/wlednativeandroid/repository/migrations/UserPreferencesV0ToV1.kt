@@ -12,6 +12,7 @@ class UserPreferencesV0ToV1: DataMigration<UserPreferences> {
         return currentData.toBuilder()
             .setThemeValue(ThemeSettings.Auto_VALUE)
             .setAutomaticDiscovery(true)
+            .setScanForBleDevices(false)
             .setShowOfflineLast(true)
             .setSendCrashData(false)
             .setSendPerformanceData(false)

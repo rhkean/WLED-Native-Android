@@ -71,6 +71,7 @@ kapt {
 }
 
 dependencies {
+    implementation(libs.accompanist.permissions)
     val composeBom = platform(libs.androidx.compose.bom)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.espresso.core)

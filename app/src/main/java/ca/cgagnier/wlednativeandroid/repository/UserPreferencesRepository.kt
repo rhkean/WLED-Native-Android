@@ -8,6 +8,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
 
     val themeMode get() = dataStore.data.map { it.theme }
     val autoDiscovery get() = dataStore.data.map { it.automaticDiscovery }
+    val scanForBleDevices get() = dataStore.data.map { it.scanForBleDevices }
     val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
     val showHiddenDevices get() = dataStore.data.map { it.showHiddenDevices }
     val lastUpdateCheckDate get() = dataStore.data.map { it.lastUpdateCheckDate }
@@ -27,6 +28,16 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         dataStore.updateData {
             it.toBuilder()
                 .setAutomaticDiscovery(autoDiscover)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
+        }
+    }
+
+    suspend fun updateScanForBleDevices(scanForBleDevices: Boolean) {
+        Log.d(TAG, "updateScanForBleDevices")
+        dataStore.updateData {
+            it.toBuilder()
+                .setScanForBleDevices(scanForBleDevices)
                 .setDateLastWritten(System.currentTimeMillis())
                 .build()
         }

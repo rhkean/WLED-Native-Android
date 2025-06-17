@@ -1,10 +1,13 @@
 package ca.cgagnier.wlednativeandroid.ui.settingsScreen
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +16,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
@@ -32,6 +37,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @Composable
 fun Settings(
@@ -39,6 +46,7 @@ fun Settings(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val settingsState by viewModel.settingsState.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {
             DeviceSettingsAppBar(
@@ -61,6 +69,7 @@ fun Settings(
                     ListingOptions(
                         showHiddenDevices = settingsState.showHiddenDevices,
                         isAutoDiscoveryEnabled = settingsState.isAutoDiscoveryEnabled,
+                        scanForBleDevices = settingsState.scanForBleDevices,
                         showOfflineDevicesLast = settingsState.showOfflineLast,
                         setShowHiddenDevices = {
                             viewModel.setShowHiddenDevices(it)
@@ -70,7 +79,10 @@ fun Settings(
                         },
                         setShowOfflineDevicesLast = {
                             viewModel.setShowOfflineDevicesLast(it)
-                        }
+                        },
+                        setScanForBleDevices = {
+                            viewModel.setScanForBleDevices(it)
+                        },
                     )
                 },
                 secondColumn = {
@@ -82,7 +94,6 @@ fun Settings(
                     )
                 }
             )
-            //}
         }
     }
 }
@@ -151,10 +162,12 @@ fun RadioRow(
 fun ListingOptions(
     showHiddenDevices: Boolean,
     isAutoDiscoveryEnabled: Boolean,
+    scanForBleDevices: Boolean,
     showOfflineDevicesLast: Boolean,
     setShowHiddenDevices: (Boolean) -> Unit,
     setAutoDiscover: (Boolean) -> Unit,
     setShowOfflineDevicesLast: (Boolean) -> Unit,
+    setScanForBleDevices: (Boolean) -> Unit,
 ) {
     Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -172,6 +185,11 @@ fun ListingOptions(
                 label = stringResource(R.string.automatically_discover_new_devices),
                 checked = isAutoDiscoveryEnabled,
                 onCheckedChange = setAutoDiscover
+            )
+            SwitchRow(
+                label = stringResource(R.string.scan_for_ble_devices),
+                checked = scanForBleDevices,
+                onCheckedChange = setScanForBleDevices
             )
             SwitchRow(
                 label = stringResource(R.string.show_offline_devices_last),
@@ -235,4 +253,68 @@ fun OneOrTwoColumnLayout(
             }
         }
     }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun BlePermissionsCheck(
+    enableBle: Boolean,
+    viewModel: SettingsViewModel,
+    modifier: Modifier = Modifier
+) {
+    // BLE is disabled, no need to check permissions
+    if(!enableBle) return
+
+    val permissions = if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+        listOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    } else {
+        listOf(
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT
+        )
+    }
+
+    val permissionsState = rememberMultiplePermissionsState(permissions)
+
+    if(!permissionsState.allPermissionsGranted) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                viewModel.setScanForBleDevices(false)
+                return@BasicAlertDialog
+            },
+            modifier = modifier,
+        ) {
+            Column(
+                modifier = modifier.padding(16.dp)
+            ) {
+                Text(
+                    stringResource(
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
+                            R.string.location_permission_required
+                        else
+                            R.string.bluetooth_permission_required
+                    ),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                if (permissionsState.shouldShowRationale) {
+                    Spacer(Modifier.padding(8.dp))
+                    Text(
+                        stringResource(
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
+                                R.string.location_permission_rationale
+                            else
+                                R.string.bluetooth_permission_rationale
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(stringResource(R.string.please_grant_relevant_permissions))
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
+                    Text(stringResource(R.string.request_permissions))
+                }
+            }
+        }
+    }
+    viewModel.setScanForBleDevices(permissionsState.allPermissionsGranted)
 }

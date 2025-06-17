@@ -10,10 +10,12 @@ import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
-import ca.cgagnier.wlednativeandroid.service.DeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.BleDeviceDiscovery
+import ca.cgagnier.wlednativeandroid.service.WiFiDeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.NetworkConnectivityManager
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -51,7 +53,21 @@ class DeviceListDetailViewModel @Inject constructor(
             initialValue = false
         )
 
-    private val discoveryService = DeviceDiscovery(
+    private val wifiDiscoveryService = WiFiDeviceDiscovery(
+        context = getApplication<Application>().applicationContext,
+        onDeviceDiscovered = {
+            deviceDiscovered(it)
+        }
+    )
+
+    val scanForBleDevices = preferencesRepository.scanForBleDevices
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    private val bleDiscoveryService = BleDeviceDiscovery(
         context = getApplication<Application>().applicationContext,
         onDeviceDiscovered = {
             deviceDiscovered(it)
@@ -121,21 +137,25 @@ class DeviceListDetailViewModel @Inject constructor(
         )
     }
 
-    private fun startDiscoveryService() {
+    private fun startDiscoveryServices() {
         Log.i(TAG, "Start device discovery")
-        discoveryService.start()
+        wifiDiscoveryService.start()
+        if(scanForBleDevices.value)
+            bleDiscoveryService.start()
     }
 
-    fun startDiscoveryServiceTimed(timeMillis: Long = 10000) = viewModelScope.launch(Dispatchers.IO) {
-        Log.i(TAG, "Start device discovery")
-        startDiscoveryService()
-        delay(timeMillis)
-        stopDiscoveryService()
-    }
+    fun startDiscoveryServicesTimed(timeMillis: Long = 10000) =
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.i(TAG, "Start device discovery")
+            startDiscoveryServices()
+            delay(timeMillis)
+            stopDiscoveryServices()
+        }
 
-    fun stopDiscoveryService() {
+    fun stopDiscoveryServices() {
         Log.i(TAG, "Stop device discovery")
-        discoveryService.stop()
+        wifiDiscoveryService.stop()
+        bleDiscoveryService.stop()
     }
 
     private fun deviceDiscovered(device: Device) {
