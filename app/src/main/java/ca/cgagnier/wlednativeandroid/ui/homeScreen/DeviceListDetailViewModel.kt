@@ -11,19 +11,19 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.BleDeviceDiscovery
-import ca.cgagnier.wlednativeandroid.service.WiFiDeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.NetworkConnectivityManager
+import ca.cgagnier.wlednativeandroid.service.WiFiDeviceDiscovery
 import ca.cgagnier.wlednativeandroid.service.device.StateFactory
 import ca.cgagnier.wlednativeandroid.service.device.api.request.RefreshRequest
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -46,10 +46,20 @@ class DeviceListDetailViewModel @Inject constructor(
     private var isPolling by mutableStateOf(false)
     private var job: Job? = null
 
+    private val _scanForBleDevices = MutableStateFlow<Boolean>(false)
+    val scanForBleDevices: StateFlow<Boolean> = _scanForBleDevices.asStateFlow()
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferencesRepository.scanForBleDevices.collect { scanForBleDevices ->
+                _scanForBleDevices.value = scanForBleDevices
+            }
+        }
+    }
+
     val showHiddenDevices = preferencesRepository.showHiddenDevices
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
+            WhileSubscribed(5000),
             initialValue = false
         )
 
@@ -59,13 +69,6 @@ class DeviceListDetailViewModel @Inject constructor(
             deviceDiscovered(it)
         }
     )
-
-    val scanForBleDevices = preferencesRepository.scanForBleDevices
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
 
     private val bleDiscoveryService = BleDeviceDiscovery(
         context = getApplication<Application>().applicationContext,
@@ -140,13 +143,17 @@ class DeviceListDetailViewModel @Inject constructor(
     private fun startDiscoveryServices() {
         Log.i(TAG, "Start device discovery")
         wifiDiscoveryService.start()
-        if(scanForBleDevices.value)
+        if(scanForBleDevices.value) {
+            Log.i(TAG, "doBleScan is true")
             bleDiscoveryService.start()
+        } else
+            Log.i(TAG, "doBleScan is false")
     }
 
     fun startDiscoveryServicesTimed(timeMillis: Long = 10000) =
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "Start device discovery")
+
             startDiscoveryServices()
             delay(timeMillis)
             stopDiscoveryServices()
@@ -216,6 +223,7 @@ class DeviceListDetailViewModel @Inject constructor(
     }
 
     fun toggleShowHiddenDevices() = viewModelScope.launch(Dispatchers.IO) {
+        //preferencesRepository.updateShowHiddenDevices(!showHiddenDevices.value)
         preferencesRepository.updateShowHiddenDevices(!showHiddenDevices.value)
     }
 
