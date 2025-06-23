@@ -55,6 +55,8 @@ data class Device(
     val batteryPercentage: Double = 0.0,
     @ColumnInfo(defaultValue = "0")
     val hasBattery: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val isBle: Boolean = false,
 ): Parcelable {
     @Ignore
     @IgnoredOnParcel
@@ -66,22 +68,29 @@ data class Device(
 
     fun getNetworkStrengthImage(): Int {
         if (!isOnline) {
+            if(isBle) return R.drawable.twotone_signal_ble_no_connection
             return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
         }
         if (networkRssi >= -50) {
+            if(isBle) return R.drawable.twotone_signal_ble_4_bar
             return R.drawable.twotone_signal_wifi_4_bar_24
         }
         if (networkRssi >= -70) {
+            if(isBle) return R.drawable.twotone_signal_ble_3_bar
             return R.drawable.twotone_signal_wifi_3_bar_24
         }
         if (networkRssi >= -80) {
+            if(isBle) return R.drawable.twotone_signal_ble_2_bar
             return R.drawable.twotone_signal_wifi_2_bar_24
         }
         if (networkRssi >= -100) {
+            if(isBle) return R.drawable.twotone_signal_ble_1_bar
             return R.drawable.twotone_signal_wifi_1_bar_24
         }
+        if(isBle) return R.drawable.twotone_signal_ble_0_bar
         return R.drawable.twotone_signal_wifi_0_bar_24
     }
+
     fun getBatteryPercentageImage(): Int {
         return when {
             batteryPercentage <= 10 -> R.drawable.baseline_battery_0_bar_24

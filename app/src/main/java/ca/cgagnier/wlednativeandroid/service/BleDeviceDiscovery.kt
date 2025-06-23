@@ -52,24 +52,21 @@ class BleDeviceDiscovery (
     // If we're getting a scan result, we already have the relevant permission(s)
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val indexQuery = scanResults.indexOfFirst { it.device.address == result.device.address }
-            if(indexQuery != -1) { // A scan result already exists with the same address
-                scanResults[indexQuery] = result
-            } else {
-                val deviceAddress = result.device.address
-                val deviceName = result.device.name
-                Log.i(TAG, "Found BLE device! Name: ${deviceName ?: "Unnamed"}, address: $deviceAddress")
+            val deviceAddress = result.device.address
+            val deviceName = result.device.name
+            Log.i(TAG, "Found BLE device! Name: ${deviceName ?: "Unnamed"}, address: $deviceAddress")
 
-                onDeviceDiscovered(
-                    Device(
-                        deviceAddress,
-                        deviceName,
-                        isCustomName = false,
-                        isHidden = false,
-                        macAddress = Device.UNKNOWN_VALUE
-                    )
+            onDeviceDiscovered(
+                Device(
+                    deviceAddress,
+                    deviceName,
+                    isCustomName = false,
+                    isHidden = false,
+                    macAddress = deviceAddress,
+                    isBle = true,
+                    networkRssi = result.rssi,
                 )
-            }
+            )
         }
 
         override fun onScanFailed(errorCode: Int) {
