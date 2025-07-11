@@ -12,6 +12,7 @@ class UserPreferencesSerializer : Serializer<UserPreferences> {
         .setAutomaticDiscovery(true)
         .setScanForBleDevices(false)
         .setShowOfflineLast(true)
+        .setArePermissionsDenied(false)
         .setSendCrashData(false)
         .setSendPerformanceData(false)
         .build()

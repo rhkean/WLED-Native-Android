@@ -2,6 +2,7 @@ package ca.cgagnier.wlednativeandroid.ui.settingsScreen
 
 import android.Manifest
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,12 +42,27 @@ import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
+const val TAG = "Settings.kt"
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Settings(
     navigateUp: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settingsState by viewModel.settingsState.collectAsStateWithLifecycle()
+    val blePermissions = viewModel.blePermissions
+    val blePermissionsState = rememberMultiplePermissionsState(
+        permissions = blePermissions.permissions,
+        onPermissionsResult = { results ->
+            val blePermissions = blePermissions
+            val enableBleScanning = results.all { (_, isGranted) -> isGranted }
+            viewModel.setScanForBleDevices(enableBleScanning)
+            viewModel.setArePermissionsDenied(
+                !enableBleScanning && !blePermissions.shouldShowRationale()
+            )
+        }
+    )
 
     Scaffold(
         topBar = {
@@ -81,8 +98,22 @@ fun Settings(
                             viewModel.setShowOfflineDevicesLast(it)
                         },
                         setScanForBleDevices = {
-                            viewModel.setScanForBleDevices(it)
+                            if(it && !blePermissionsState.allPermissionsGranted) {
+                                Log.d(TAG, "allPermissionsGranted: ${blePermissionsState.allPermissionsGranted}")
+                                Log.d(TAG, "should show rationale: ${blePermissionsState.shouldShowRationale}")
+                                Log.d(TAG, "revoked permissions: ${blePermissionsState.revokedPermissions.size}")
+                                blePermissionsState.launchMultiplePermissionRequest()
+                            } else {
+                                viewModel.setScanForBleDevices(it)
+                            }
+                            Log.d(TAG, "done")
                         },
+                        bleExplanationText = when {
+                            blePermissionsState.allPermissionsGranted -> ""
+                            blePermissionsState.shouldShowRationale -> blePermissions.rationale
+                            settingsState.arePermissionsDenied -> blePermissions.deniedExplanation
+                            else -> ""
+                        }
                     )
                 },
                 secondColumn = {
@@ -168,6 +199,7 @@ fun ListingOptions(
     setAutoDiscover: (Boolean) -> Unit,
     setShowOfflineDevicesLast: (Boolean) -> Unit,
     setScanForBleDevices: (Boolean) -> Unit,
+    bleExplanationText: String = "",
 ) {
     Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -187,14 +219,19 @@ fun ListingOptions(
                 onCheckedChange = setAutoDiscover
             )
             SwitchRow(
+                label = stringResource(R.string.show_offline_devices_last),
+                checked = showOfflineDevicesLast,
+                onCheckedChange = setShowOfflineDevicesLast
+            )
+            SwitchRow(
                 label = stringResource(R.string.scan_for_ble_devices),
                 checked = scanForBleDevices,
                 onCheckedChange = setScanForBleDevices
             )
-            SwitchRow(
-                label = stringResource(R.string.show_offline_devices_last),
-                checked = showOfflineDevicesLast,
-                onCheckedChange = setShowOfflineDevicesLast
+            Text(
+                text = bleExplanationText,
+//                style = MaterialTheme.typography.bodyMedium,
+//                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -253,68 +290,4 @@ fun OneOrTwoColumnLayout(
             }
         }
     }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun BlePermissionsCheck(
-    enableBle: Boolean,
-    viewModel: SettingsViewModel,
-    modifier: Modifier = Modifier
-) {
-    // BLE is disabled, no need to check permissions
-    if(!enableBle) return
-
-    val permissions = if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-        listOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    } else {
-        listOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT
-        )
-    }
-
-    val permissionsState = rememberMultiplePermissionsState(permissions)
-
-    if(!permissionsState.allPermissionsGranted) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                viewModel.setScanForBleDevices(false)
-                return@BasicAlertDialog
-            },
-            modifier = modifier,
-        ) {
-            Column(
-                modifier = modifier.padding(16.dp)
-            ) {
-                Text(
-                    stringResource(
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
-                            R.string.location_permission_required
-                        else
-                            R.string.bluetooth_permission_required
-                    ),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                if (permissionsState.shouldShowRationale) {
-                    Spacer(Modifier.padding(8.dp))
-                    Text(
-                        stringResource(
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
-                                R.string.location_permission_rationale
-                            else
-                                R.string.bluetooth_permission_rationale
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(R.string.please_grant_relevant_permissions))
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
-                    Text(stringResource(R.string.request_permissions))
-                }
-            }
-        }
-    }
-    viewModel.setScanForBleDevices(permissionsState.allPermissionsGranted)
 }

@@ -12,18 +12,15 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanFilter
 import android.util.Log
 import android.os.ParcelUuid
-///////////////////////////////////
-
-//import com.punchthrough.blestarterappandroid.ble.ConnectionEventListener
-//import com.punchthrough.blestarterappandroid.ble.ConnectionManager
-//import com.punchthrough.blestarterappandroid.databinding.ActivityMainBinding
+import ca.cgagnier.wlednativeandroid.BlePermissions
 
 private val WLED_BLE_SERVICE_UUID = "01FA0001-46C9-4507-84BB-F2BE3F24C47A"
 
 @SuppressLint("MissingPermission") // App's role to ensure permissions are available
 class BleDeviceDiscovery (
     val context: Context,
-    val onDeviceDiscovered: (Device) -> Unit
+    val onDeviceDiscovered: (Device) -> Unit,
+    val blePermissions: BlePermissions
 ) {
     private var isScanning = false
         set(value) {
@@ -75,12 +72,8 @@ class BleDeviceDiscovery (
         }
     }
 
-    private fun initialize() {
-
-    }
-
     fun start() {
-        initialize()
+        if(!blePermissions.verifyPermissions()) return
         val scanFilters = listOf(scanFilter)
         bleScanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true

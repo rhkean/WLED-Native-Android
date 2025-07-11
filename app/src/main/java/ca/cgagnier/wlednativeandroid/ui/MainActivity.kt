@@ -8,8 +8,12 @@ import android.webkit.WebChromeClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import ca.cgagnier.wlednativeandroid.BlePermissions
 import ca.cgagnier.wlednativeandroid.FileUploadContract
 import ca.cgagnier.wlednativeandroid.FileUploadContractResult
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
@@ -30,6 +34,8 @@ class MainActivity : ComponentActivity() {
     lateinit var userPreferencesRepository: UserPreferencesRepository
     @Inject
     lateinit var versionWithAssetsRepository: VersionWithAssetsRepository
+    @Inject
+    lateinit var blePermissions: BlePermissions
 
     // For WebView file upload support
     var uploadMessage: ValueCallback<Array<Uri>>? = null
@@ -53,6 +59,7 @@ class MainActivity : ComponentActivity() {
                 MainNavHost()
             }
         }
+        blePermissions.installActivityContext(this, ::disableBleScan)
         updateDeviceVersionList()
     }
 
@@ -72,6 +79,14 @@ class MainActivity : ComponentActivity() {
                 // Set the next date to check in minimum 24 hours from now.
                 userPreferencesRepository.updateLastUpdateCheckDate(now + (24 * 60 * 60 * 1000))
             }
+        }
+    }
+
+    private fun disableBleScan() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            //userPreferencesRepository.scanForBleDevices.collect() {
+                userPreferencesRepository.updateScanForBleDevices(false)
+            //}
         }
     }
 }

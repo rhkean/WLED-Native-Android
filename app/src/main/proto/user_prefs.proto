@@ -37,4 +37,6 @@ message UserPreferences {
   bool show_hidden_devices = 11;
 
   bool scan_for_ble_devices = 12;
+
+  bool are_permissions_denied = 13;
 }

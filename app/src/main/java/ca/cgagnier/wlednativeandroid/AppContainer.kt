@@ -117,4 +117,10 @@ object AppContainer {
     ): NetworkConnectivityManager {
         return NetworkConnectivityManager(appContext, coroutineScope)
     }
+
+    @Provides
+    @Singleton
+    fun provideBlePermissions(): BlePermissions {
+        return BlePermissions()
+    }
 }

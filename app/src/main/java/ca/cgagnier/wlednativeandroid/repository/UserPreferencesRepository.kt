@@ -11,6 +11,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
     val scanForBleDevices get() = dataStore.data.map { it.scanForBleDevices }
     val showOfflineDevicesLast get() = dataStore.data.map { it.showOfflineLast }
     val showHiddenDevices get() = dataStore.data.map { it.showHiddenDevices }
+    val arePermissionsDenied get() = dataStore.data.map { it.arePermissionsDenied }
     val lastUpdateCheckDate get() = dataStore.data.map { it.lastUpdateCheckDate }
 
     suspend fun updateThemeMode(themeSettings: ThemeSettings) {
@@ -58,6 +59,16 @@ class UserPreferencesRepository(private val dataStore: DataStore<UserPreferences
         dataStore.updateData {
             it.toBuilder()
                 .setShowHiddenDevices(showHiddenDevices)
+                .setDateLastWritten(System.currentTimeMillis())
+                .build()
+        }
+    }
+
+    suspend fun updateArePermissionsDenied(arePermissionsDenied: Boolean) {
+        Log.d(TAG, "updateArePermissionsDenied")
+        dataStore.updateData {
+            it.toBuilder()
+                .setArePermissionsDenied(arePermissionsDenied)
                 .setDateLastWritten(System.currentTimeMillis())
                 .build()
         }

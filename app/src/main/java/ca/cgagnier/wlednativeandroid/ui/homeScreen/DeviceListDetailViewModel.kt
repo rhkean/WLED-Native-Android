@@ -2,11 +2,15 @@ package ca.cgagnier.wlednativeandroid.ui.homeScreen
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ca.cgagnier.wlednativeandroid.BlePermissions
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
@@ -24,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -39,12 +44,20 @@ class DeviceListDetailViewModel @Inject constructor(
     private val repository: DeviceRepository,
     private val stateFactory: StateFactory,
     private val preferencesRepository: UserPreferencesRepository,
+    private val blePermissions: BlePermissions,
     networkManager: NetworkConnectivityManager
 ): AndroidViewModel(application) {
     val isWLEDCaptivePortal = networkManager.isWLEDCaptivePortal
 
     private var isPolling by mutableStateOf(false)
     private var job: Job? = null
+
+    val showHiddenDevices = preferencesRepository.showHiddenDevices
+        .stateIn(
+            viewModelScope,
+            WhileSubscribed(5000),
+            initialValue = false
+        )
 
     private val _scanForBleDevices = MutableStateFlow<Boolean>(false)
     val scanForBleDevices: StateFlow<Boolean> = _scanForBleDevices.asStateFlow()
@@ -55,14 +68,6 @@ class DeviceListDetailViewModel @Inject constructor(
             }
         }
     }
-
-    val showHiddenDevices = preferencesRepository.showHiddenDevices
-        .stateIn(
-            viewModelScope,
-            WhileSubscribed(5000),
-            initialValue = false
-        )
-
     private val wifiDiscoveryService = WiFiDeviceDiscovery(
         context = getApplication<Application>().applicationContext,
         onDeviceDiscovered = {
@@ -74,7 +79,8 @@ class DeviceListDetailViewModel @Inject constructor(
         context = getApplication<Application>().applicationContext,
         onDeviceDiscovered = {
             deviceDiscovered(it)
-        }
+        },
+        blePermissions = blePermissions
     )
 
     private val _isAddDeviceBottomSheetVisible = MutableStateFlow(false)
