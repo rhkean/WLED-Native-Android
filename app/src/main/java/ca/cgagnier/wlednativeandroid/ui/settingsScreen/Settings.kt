@@ -1,14 +1,10 @@
 package ca.cgagnier.wlednativeandroid.ui.settingsScreen
 
-import android.Manifest
-import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
@@ -32,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,10 +45,10 @@ fun Settings(
 ) {
     val settingsState by viewModel.settingsState.collectAsStateWithLifecycle()
     val blePermissions = viewModel.blePermissions
+
     val blePermissionsState = rememberMultiplePermissionsState(
         permissions = blePermissions.permissions,
         onPermissionsResult = { results ->
-            val blePermissions = blePermissions
             val enableBleScanning = results.all { (_, isGranted) -> isGranted }
             viewModel.setScanForBleDevices(enableBleScanning)
             viewModel.setArePermissionsDenied(
@@ -99,14 +92,10 @@ fun Settings(
                         },
                         setScanForBleDevices = {
                             if(it && !blePermissionsState.allPermissionsGranted) {
-                                Log.d(TAG, "allPermissionsGranted: ${blePermissionsState.allPermissionsGranted}")
-                                Log.d(TAG, "should show rationale: ${blePermissionsState.shouldShowRationale}")
-                                Log.d(TAG, "revoked permissions: ${blePermissionsState.revokedPermissions.size}")
                                 blePermissionsState.launchMultiplePermissionRequest()
                             } else {
                                 viewModel.setScanForBleDevices(it)
                             }
-                            Log.d(TAG, "done")
                         },
                         bleExplanationText = when {
                             blePermissionsState.allPermissionsGranted -> ""
@@ -230,8 +219,6 @@ fun ListingOptions(
             )
             Text(
                 text = bleExplanationText,
-//                style = MaterialTheme.typography.bodyMedium,
-//                modifier = Modifier.weight(1f)
             )
         }
     }

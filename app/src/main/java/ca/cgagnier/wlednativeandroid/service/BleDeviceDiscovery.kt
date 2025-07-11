@@ -1,18 +1,17 @@
 package ca.cgagnier.wlednativeandroid.service
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.content.Context
-import ca.cgagnier.wlednativeandroid.model.Device
-import kotlin.getValue
-import android.bluetooth.le.ScanSettings
-import android.annotation.SuppressLint
 import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanFilter
-import android.util.Log
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
+import android.content.Context
 import android.os.ParcelUuid
+import android.util.Log
 import ca.cgagnier.wlednativeandroid.BlePermissions
+import ca.cgagnier.wlednativeandroid.model.Device
 
 private val WLED_BLE_SERVICE_UUID = "01FA0001-46C9-4507-84BB-F2BE3F24C47A"
 

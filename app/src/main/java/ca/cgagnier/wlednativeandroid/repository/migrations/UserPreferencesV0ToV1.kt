@@ -14,6 +14,7 @@ class UserPreferencesV0ToV1: DataMigration<UserPreferences> {
             .setAutomaticDiscovery(true)
             .setScanForBleDevices(false)
             .setShowOfflineLast(true)
+            .setArePermissionsDenied(false)
             .setSendCrashData(false)
             .setSendPerformanceData(false)
             .setVersion(1)
