@@ -7,6 +7,7 @@ import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.MulticastLock
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.WiFiDevice
 
 
 class WiFiDeviceDiscovery(
@@ -80,7 +81,7 @@ class WiFiDeviceDiscovery(
         val deviceIp = serviceInfo.host.hostAddress!!
         val deviceName = serviceInfo.serviceName ?: ""
         onDeviceDiscovered(
-            Device(
+            WiFiDevice(
                 deviceIp,
                 deviceName,
                 isCustomName = false,

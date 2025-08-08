@@ -35,7 +35,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.cgagnier.wlednativeandroid.R
 import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.model.VersionWithAssets
-import ca.cgagnier.wlednativeandroid.model.WiFiDevice
 import ca.cgagnier.wlednativeandroid.ui.components.deviceName
 import ca.cgagnier.wlednativeandroid.ui.theme.WLEDNativeTheme
 
@@ -266,7 +265,7 @@ fun UpdateInstallingDialogStepStartingPreview(
     WLEDNativeTheme(darkTheme = isSystemInDarkTheme()) {
         UpdateInstallingDialog(
             state = state,
-            device = WiFiDevice.getPreviewWiFiDevice(),
+            device = Device.getPreviewWiFiDevice(),
             onDismiss = {},
             onToggleErrorMessage = {}
         )

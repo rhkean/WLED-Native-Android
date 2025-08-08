@@ -2,9 +2,9 @@ package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
 import ca.cgagnier.wlednativeandroid.R
+import no.nordicsemi.kotlin.ble.client.android.Peripheral
 
-//@Parcelize
-class WiFiDevice(
+class BleDevice(
     address: String,
     name: String,
     isCustomName: Boolean,
@@ -31,6 +31,7 @@ class WiFiDevice(
     batteryPercentage: Double = 0.0,
     hasBattery: Boolean = false,
     isBle: Boolean = false,
+    val peripheral: Peripheral
 ): Device(
     address,
     name,
@@ -61,29 +62,25 @@ class WiFiDevice(
 ) {
 
     override fun getDeviceUrl(): String {
-        return "http://$address"
+        return "$address"
     }
 
     override fun getNetworkStrengthImage(): Int {
         if (!isOnline) {
-            return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
+            return R.drawable.twotone_signal_ble_no_connection
         }
         if (networkRssi >= -50) {
-            return R.drawable.twotone_signal_wifi_4_bar_24
+            return R.drawable.twotone_signal_ble_4_bar
         }
         if (networkRssi >= -70) {
-            return R.drawable.twotone_signal_wifi_3_bar_24
+            return R.drawable.twotone_signal_ble_3_bar
         }
         if (networkRssi >= -80) {
-            return R.drawable.twotone_signal_wifi_2_bar_24
+            return R.drawable.twotone_signal_ble_2_bar
         }
         if (networkRssi >= -100) {
-            return R.drawable.twotone_signal_wifi_1_bar_24
+            return R.drawable.twotone_signal_ble_1_bar
         }
-        return R.drawable.twotone_signal_wifi_0_bar_24
-    }
-
-    override fun isAPMode(): Boolean {
-        return address == DEFAULT_WLED_AP_IP
+        return R.drawable.twotone_signal_ble_0_bar
     }
 }

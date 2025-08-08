@@ -2,8 +2,10 @@ package ca.cgagnier.wlednativeandroid.service
 
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.BlePermissions
+import ca.cgagnier.wlednativeandroid.model.BleDevice
 import ca.cgagnier.wlednativeandroid.model.Device
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -35,8 +37,9 @@ private val WLED_BLE_SERVICE_UUID = "01FA0001-46C9-4507-84BB-F2BE3F24C47A"
 class BleDeviceDiscovery(
     private val onDeviceDiscovered: (Device) -> Unit,
     private val blePermissions: BlePermissions,
-    private val scope: CoroutineScope,
+//    private val scope: CoroutineScope,
 ) {
+    private val scope = CoroutineScope(Dispatchers.IO)
     @Inject lateinit var centralManager: CentralManager
 
     val state = centralManager.state
@@ -63,7 +66,7 @@ class BleDeviceDiscovery(
             }
             .distinctByPeripheral()
             .map {
-                Device(
+                BleDevice(
                     address = it.peripheral.address,
                     name = it.peripheral.name ?: it.peripheral.address,
                     isCustomName = false,
@@ -83,9 +86,9 @@ class BleDeviceDiscovery(
                 // Track state of each peripheral.
                 // Note, that the states are observed using view model scope, even when the
                 // device isn't connected.
-                observePeripheralState(device.peripheral!!, scope)
+                observePeripheralState(device, scope)
                 // Track bond state of each peripheral.
-                observeBondState(device.peripheral, scope)
+                observeBondState(device, scope)
             }
             .catch { exception ->
                 Log.e(TAG, "Scan failed: $exception")
@@ -127,17 +130,19 @@ class BleDeviceDiscovery(
         }
     }
 
-    private fun observePeripheralState(peripheral: Peripheral, scope: CoroutineScope) {
-        peripheral.state
+    private fun observePeripheralState(device: BleDevice, scope: CoroutineScope) {
+        device
+            .peripheral
+            .state
             .buffer()
             .onEach {
-                Log.i(TAG, "State of $peripheral: $it")
+                Log.i(TAG, "State of $device.peripheral: $it")
 
                 // Each time a connection changes, handle the new state
                 when (it) {
                     is ConnectionState.Connected -> {
-                        connectionScopeMap[peripheral]?.launch {
-                            initiateConnection(peripheral)
+                        connectionScopeMap[device]?.launch {
+                            initiateConnection(device.peripheral)
                         }
                     }
 
@@ -145,25 +150,25 @@ class BleDeviceDiscovery(
                         // Just for testing, wait with cancelling the scope to get all the logs.
                         delay(500)
                         // Cancel connection scope, so that previously launched jobs are cancelled.
-                        connectionScopeMap.remove(peripheral)?.cancel()
+                        connectionScopeMap.remove(device)?.cancel()
                     }
 
                     else -> { /* Ignore */ }
                 }
             }
             .onCompletion {
-                Log.d(TAG, "State collection for $peripheral completed")
+                Log.d(TAG, "State collection for $device.peripheral completed")
             }
             .launchIn(scope)
     }
 
-    private fun observeBondState(peripheral: Peripheral, scope: CoroutineScope) {
-        peripheral.bondState
+    private fun observeBondState(device: BleDevice, scope: CoroutineScope) {
+        device.peripheral.bondState
             .onEach {
-                Log.i(TAG, "Bond state of $peripheral: $it")
+                Log.i(TAG, "Bond state of ${device.peripheral}: $it")
             }
             .onCompletion {
-                Log.d(TAG, "Bond state collection for $peripheral completed")
+                Log.d(TAG, "Bond state collection for ${device.peripheral} completed")
             }
             .launchIn(scope)
     }

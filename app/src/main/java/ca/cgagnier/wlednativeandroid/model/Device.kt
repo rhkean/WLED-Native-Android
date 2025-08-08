@@ -1,10 +1,8 @@
 package ca.cgagnier.wlednativeandroid.model
 
-import android.graphics.Color
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
-import androidx.room.PrimaryKey
 import ca.cgagnier.wlednativeandroid.R
 import kotlinx.parcelize.IgnoredOnParcel
 
@@ -14,53 +12,55 @@ import kotlinx.parcelize.IgnoredOnParcel
     primaryKeys = ["address"],
 )
 open class Device(
-    open val address: String,
-    open val name: String,
-    open val isCustomName: Boolean,
-    open val isHidden: Boolean,
+    val address: String,
+    val name: String,
+    val isCustomName: Boolean,
+    val isHidden: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val macAddress: String,
-    open val brightness: Int,
-    open val color: Int,
-    open val isPoweredOn: Boolean,
-    open val isOnline: Boolean,
-    open val isRefreshing: Boolean,
+    val macAddress: String,
+    val brightness: Int,
+    val color: Int,
+    val isPoweredOn: Boolean,
+    val isOnline: Boolean,
+    val isRefreshing: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val networkBssid: String,
+    val networkBssid: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val networkRssi: Int,
+    val networkRssi: Int,
     @ColumnInfo(defaultValue = "0")
-    open val networkSignal: Int,
+    val networkSignal: Int,
     @ColumnInfo(defaultValue = "0")
-    open val networkChannel: Int,
+    val networkChannel: Int,
     @ColumnInfo(defaultValue = "0")
-    open val isEthernet: Boolean,
+    val isEthernet: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val platformName: String,
+    val platformName: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val version: String,
+    val version: String,
     @ColumnInfo(defaultValue = "")
-    open val newUpdateVersionTagAvailable: String,
+    val newUpdateVersionTagAvailable: String,
     @ColumnInfo(defaultValue = "")
-    open val skipUpdateTag: String,
+    val skipUpdateTag: String,
     @ColumnInfo(defaultValue = "UNKNOWN")
-    open val branch: Branch,
+    val branch: Branch,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val brand: String,
+    val brand: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val productName: String,
+    val productName: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    open val release: String,
+    val release: String,
     @ColumnInfo(defaultValue = "0.0")
-    open val batteryPercentage: Double,
+    val batteryPercentage: Double,
     @ColumnInfo(defaultValue = "0")
-    open val hasBattery: Boolean,
+    val hasBattery: Boolean,
     @ColumnInfo(defaultValue = "0")
-    open val isBle: Boolean
+    val isBle: Boolean
 ) {
     @Ignore
     @IgnoredOnParcel
     var isSliding = false
+
+    open fun getDeviceUrl(): String { return "" }
 
     fun getBatteryPercentageImage(): Int {
         return when {
@@ -75,8 +75,103 @@ open class Device(
         }
     }
 
+    open fun getNetworkStrengthImage(): Int {
+        return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
+    }
+
+    open fun isAPMode():Boolean { return false }
     fun hasUpdateAvailable(): Boolean {
         return newUpdateVersionTagAvailable != ""
+    }
+
+    fun copy(
+        address: String = this.address,
+        name: String = this.name,
+        isCustomName: Boolean = this.isCustomName,
+        isHidden: Boolean = this.isHidden,
+        macAddress: String = this.macAddress,
+        brightness: Int = this.brightness,
+        color: Int = this.color,
+        isPoweredOn: Boolean = this.isPoweredOn,
+        isOnline: Boolean = this.isOnline,
+        isRefreshing: Boolean = this.isRefreshing,
+        networkBssid: String = this.networkBssid,
+        networkRssi: Int = this.networkRssi,
+        networkSignal: Int = this.networkSignal,
+        networkChannel: Int = this.networkChannel,
+        isEthernet: Boolean = this.isEthernet,
+        platformName: String = this.platformName,
+        version: String = this.version,
+        newUpdateVersionTagAvailable: String = this.newUpdateVersionTagAvailable,
+        skipUpdateTag: String = this.skipUpdateTag,
+        branch: Branch = this.branch,
+        brand: String = this.brand,
+        productName: String = this.productName,
+        release: String = this.release,
+        batteryPercentage: Double = this.batteryPercentage,
+        hasBattery: Boolean = this.hasBattery,
+        isBle: Boolean = this.isBle
+    ): Device {
+        if(this is BleDevice)
+            return BleDevice(
+                address,
+                name,
+                isCustomName,
+                isHidden,
+                macAddress,
+                brightness,
+                color,
+                isPoweredOn,
+                isOnline,
+                isRefreshing,
+                networkBssid,
+                networkRssi,
+                networkSignal,
+                networkChannel,
+                isEthernet,
+                platformName,
+                version,
+                newUpdateVersionTagAvailable,
+                skipUpdateTag,
+                branch,
+                brand,
+                productName,
+                release,
+                batteryPercentage,
+                hasBattery,
+                isBle,
+                peripheral = this.peripheral
+            )
+        else
+            return WiFiDevice(
+                address,
+                name,
+                isCustomName,
+                isHidden,
+                macAddress,
+                brightness,
+                color,
+                isPoweredOn,
+                isOnline,
+                isRefreshing,
+                networkBssid,
+                networkRssi,
+                networkSignal,
+                networkChannel,
+                isEthernet,
+                platformName,
+                version,
+                newUpdateVersionTagAvailable,
+                skipUpdateTag,
+                branch,
+                brand,
+                productName,
+                release,
+                batteryPercentage,
+                hasBattery,
+                isBle
+            )
+
     }
 
     companion object {
@@ -105,10 +200,4 @@ open class Device(
             )
         }
     }
-}
-
-interface IDevice {
-    abstract fun isAPMode(): Boolean
-    abstract fun getDeviceUrl(): String
-    abstract fun getNetworkStrengthImage(): Int
 }

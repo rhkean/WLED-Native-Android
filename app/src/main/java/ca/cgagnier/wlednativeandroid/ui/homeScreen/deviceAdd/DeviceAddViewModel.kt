@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.domain.use_case.ValidateAddress
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.WiFiDevice
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +57,7 @@ class DeviceAddViewModel @Inject constructor(
         }
 
         val trimmedName = state.name.trim()
-        val device = Device(
+        val device = WiFiDevice(
             address = state.address.trim(),
             name = trimmedName,
             isCustomName = trimmedName != "",
