@@ -1,44 +1,43 @@
 [versions]
-agp = "8.11.1"
-composeBom = "2025.04.01"
-converterMoshi = "2.11.0"
+agp = "8.12.0"
+composeBom = "2025.07.00"
+converterMoshi = "3.0.0"
 core = "4.6.2"
 coreKtx = "1.16.0"
 coreSplashscreen = "1.0.1"
-datastorePreferences = "1.1.5"
+datastorePreferences = "1.1.7"
 espressoCore = "3.6.1"
-fragmentKtx = "1.8.6"
-# Version 2.53.1 causes issue with compiling
-# https://github.com/google/dagger/issues/4533
-hiltAndroid = "2.56.2"
-hiltCompiler = "2.56.2"
+fragmentKtx = "1.8.8"
+hiltAndroid = "2.57"
+hiltCompiler = "2.57"
 hiltNavigationCompose = "1.2.0"
-jsoup = "1.20.1"
+jsoup = "1.21.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
-kotlin = "2.0.20"
-kotlinxSerializationJson = "1.8.1"
-ksp = "2.0.20-1.0.24"
+kotlin = "2.2.0"
+kotlinxSerializationJson = "1.9.0"
+ksp = "2.2.0-2.0.2"
 legacySupportV4 = "1.0.0"
-lifecycleViewmodelKtx = "2.8.7"
-loggingInterceptor = "5.0.0-alpha.14"
-materialKolor = "2.1.1"
+lifecycleViewmodelKtx = "2.9.2"
+materialIcons = "1.7.8"
+materialKolor = "3.0.0"
 moshiKotlinCodegen = "1.15.2"
 moshiVersion = "1.15.2"
-multiplatformmarkdownrenderer = "0.33.0"
-navigationCompose = "2.8.9"
-okhttp = "5.0.0-alpha.14"
+multiplatformmarkdownrenderer = "0.35.0"
+navigationCompose = "2.9.2"
+okhttp = "5.1.0"
 preferenceKtx = "1.2.1"
-protobuf = "0.9.4"
-protobufJavalite = "4.30.2"
+protobuf = "0.9.5"
+protobufJavalite = "4.31.1"
 recyclerview = "1.4.0"
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 retrofit2KotlinCoroutinesAdapter = "0.9.2"
-roomVersion = "2.7.1"
-runtimeLivedata = "1.8.0"
+roomVersion = "2.7.2"
+runtimeLivedata = "1.8.3"
 semver4j = "3.1.0"
-webkit = "1.13.0"
+webkit = "1.14.0"
 accompanistPermissions = "0.37.3"
+nordic-blek = "2.0.0-alpha06"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
@@ -56,6 +55,7 @@ androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersi
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose" }
+androidx-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIcons"}
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
@@ -83,7 +83,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleViewmodelKtx" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshiVersion" }
 moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
@@ -95,14 +95,17 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit2-kotlin-coroutines-adapter = { module = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter", version.ref = "retrofit2KotlinCoroutinesAdapter" }
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
+nordic-blek-client-android = { group = "no.nordicsemi.kotlin.ble", name = "client-android", version.ref = "nordic-blek" }
+nordic-blek-client-core-android = { group = "no.nordicsemi.kotlin.ble", name = "client-core-android", version.ref = "nordic-blek" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
-androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationCompose" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-application = { id = "com.android.application", version.ref = "agp" } #gmaven
+android-library = { id = "com.android.library", version.ref = "agp" } #gmaven
+androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationCompose" } #gmaven
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" } #gmaven mavenCentral
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" } #gradlePluginPortal
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } #gradlePluginPortal, mavenCentral
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" } #gradlePluginPortal mavenCentral
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" } #gradlePluginPortal mavenCentral
+google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" } #gradlePluginPortal mavenCentral
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" } #mavenCentral

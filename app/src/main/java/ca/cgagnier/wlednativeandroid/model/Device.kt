@@ -1,95 +1,66 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
-import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import ca.cgagnier.wlednativeandroid.R
 import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
-@Entity
-@Parcelize
-data class Device(
-    @PrimaryKey
-    val address: String,
-    val name: String,
-    val isCustomName: Boolean,
-    val isHidden: Boolean,
+
+@Entity(
+    tableName = "Device",
+    primaryKeys = ["address"],
+)
+open class Device(
+    open val address: String,
+    open val name: String,
+    open val isCustomName: Boolean,
+    open val isHidden: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val macAddress: String,
-    val brightness: Int = 0,
-    val color: Int = Color.WHITE,
-    val isPoweredOn: Boolean = false,
-    val isOnline: Boolean = false,
-    val isRefreshing: Boolean = false,
+    open val macAddress: String,
+    open val brightness: Int,
+    open val color: Int,
+    open val isPoweredOn: Boolean,
+    open val isOnline: Boolean,
+    open val isRefreshing: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val networkBssid: String = UNKNOWN_VALUE,
+    open val networkBssid: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val networkRssi: Int = -101,
+    open val networkRssi: Int,
     @ColumnInfo(defaultValue = "0")
-    val networkSignal: Int = 0,
+    open val networkSignal: Int,
     @ColumnInfo(defaultValue = "0")
-    val networkChannel: Int = 0,
+    open val networkChannel: Int,
     @ColumnInfo(defaultValue = "0")
-    val isEthernet: Boolean = false,
+    open val isEthernet: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val platformName: String = UNKNOWN_VALUE,
+    open val platformName: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val version: String = UNKNOWN_VALUE,
+    open val version: String,
     @ColumnInfo(defaultValue = "")
-    val newUpdateVersionTagAvailable: String = "",
+    open val newUpdateVersionTagAvailable: String,
     @ColumnInfo(defaultValue = "")
-    val skipUpdateTag: String = "",
+    open val skipUpdateTag: String,
     @ColumnInfo(defaultValue = "UNKNOWN")
-    val branch: Branch = Branch.UNKNOWN,
+    open val branch: Branch,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val brand: String = UNKNOWN_VALUE,
+    open val brand: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val productName: String = UNKNOWN_VALUE,
+    open val productName: String,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
-    val release: String = UNKNOWN_VALUE,
+    open val release: String,
     @ColumnInfo(defaultValue = "0.0")
-    val batteryPercentage: Double = 0.0,
+    open val batteryPercentage: Double,
     @ColumnInfo(defaultValue = "0")
-    val hasBattery: Boolean = false,
+    open val hasBattery: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isBle: Boolean = false,
-): Parcelable {
+    open val isBle: Boolean
+) {
     @Ignore
     @IgnoredOnParcel
     var isSliding = false
-
-    fun getDeviceUrl(): String {
-        return "http://$address"
-    }
-
-    fun getNetworkStrengthImage(): Int {
-        if (!isOnline) {
-            if(isBle) return R.drawable.twotone_signal_ble_no_connection
-            return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
-        }
-        if (networkRssi >= -50) {
-            if(isBle) return R.drawable.twotone_signal_ble_4_bar
-            return R.drawable.twotone_signal_wifi_4_bar_24
-        }
-        if (networkRssi >= -70) {
-            if(isBle) return R.drawable.twotone_signal_ble_3_bar
-            return R.drawable.twotone_signal_wifi_3_bar_24
-        }
-        if (networkRssi >= -80) {
-            if(isBle) return R.drawable.twotone_signal_ble_2_bar
-            return R.drawable.twotone_signal_wifi_2_bar_24
-        }
-        if (networkRssi >= -100) {
-            if(isBle) return R.drawable.twotone_signal_ble_1_bar
-            return R.drawable.twotone_signal_wifi_1_bar_24
-        }
-        if(isBle) return R.drawable.twotone_signal_ble_0_bar
-        return R.drawable.twotone_signal_wifi_0_bar_24
-    }
 
     fun getBatteryPercentageImage(): Int {
         return when {
@@ -108,16 +79,12 @@ data class Device(
         return newUpdateVersionTagAvailable != ""
     }
 
-    fun isAPMode(): Boolean {
-        return address == DEFAULT_WLED_AP_IP
-    }
-
     companion object {
         const val UNKNOWN_VALUE = "__unknown__"
         const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
         fun getDefaultAPDevice(): Device {
-            return Device(
+            return WiFiDevice(
                 address = DEFAULT_WLED_AP_IP,
                 name = "WLED AP Mode",
                 isCustomName = true,
@@ -128,8 +95,8 @@ data class Device(
             )
         }
 
-        fun getPreviewDevice(): Device {
-            return Device(
+        fun getPreviewWiFiDevice(): Device {
+            return WiFiDevice(
                 "10.0.0.1",
                 "Preview Device",
                 isCustomName = false,
@@ -138,4 +105,10 @@ data class Device(
             )
         }
     }
+}
+
+interface IDevice {
+    abstract fun isAPMode(): Boolean
+    abstract fun getDeviceUrl(): String
+    abstract fun getNetworkStrengthImage(): Int
 }

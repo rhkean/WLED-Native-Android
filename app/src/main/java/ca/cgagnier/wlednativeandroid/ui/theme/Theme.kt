@@ -22,6 +22,8 @@ import ca.cgagnier.wlednativeandroid.model.Device
 import ca.cgagnier.wlednativeandroid.repository.ThemeSettings
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.PaletteStyle
+import com.materialkolor.dynamiccolor.ColorSpec
+import com.materialkolor.scheme.DynamicScheme
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -332,8 +334,9 @@ fun DeviceTheme(
         seedColor = Color(device.color),
         style = if (device.isOnline) PaletteStyle.Vibrant else PaletteStyle.Neutral,
         animate = true,
-        isExtendedFidelity = false,
-        useDarkTheme = darkTheme
+//        isExtendedFidelity = false,
+//        useDarkTheme = darkTheme,
+        isDark = darkTheme
     ) {
         content()
     }

@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ca.cgagnier.wlednativeandroid.BlePermissions
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.WiFiDevice
 import ca.cgagnier.wlednativeandroid.repository.DeviceRepository
 import ca.cgagnier.wlednativeandroid.repository.UserPreferencesRepository
 import ca.cgagnier.wlednativeandroid.service.BleDeviceDiscovery
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import no.nordicsemi.kotlin.ble.client.android.CentralManager
 import javax.inject.Inject
 
 private const val TAG = "DeviceListDetailViewModel"
@@ -69,12 +71,13 @@ class DeviceListDetailViewModel @Inject constructor(
         }
     )
 
+
     private val bleDiscoveryService = BleDeviceDiscovery(
         context = getApplication<Application>().applicationContext,
         onDeviceDiscovered = {
             deviceDiscovered(it)
         },
-        blePermissions = blePermissions
+        blePermissions = blePermissions,
     )
 
     private val _isAddDeviceBottomSheetVisible = MutableStateFlow(false)

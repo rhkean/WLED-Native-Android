@@ -25,6 +25,8 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import no.nordicsemi.kotlin.ble.client.android.CentralManager
+import no.nordicsemi.kotlin.ble.client.android.native
 import javax.inject.Singleton
 
 private const val DATA_STORE_FILE_NAME = "user_prefs.pb"
@@ -122,5 +124,13 @@ object AppContainer {
     @Singleton
     fun provideBlePermissions(): BlePermissions {
         return BlePermissions()
+    }
+
+    @Provides
+    fun provideCentralManager(
+        @ApplicationContext context: Context,
+        scope: CoroutineScope
+    ): CentralManager {
+        return CentralManager.Factory.native(context, scope)
     }
 }
