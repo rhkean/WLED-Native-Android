@@ -78,9 +78,9 @@ class BleDeviceDiscovery(
                 )
             }
             .filter { _devices.value.contains(it) }
-            .onEach { newPeripheral ->
-                Log.i(TAG, "Found new device: ${newPeripheral.name} (${newPeripheral.address})")
-                _devices.update { devices.value + newPeripheral }
+            .onEach { bleDevice ->
+                Log.i(TAG, "Found new device: ${bleDevice.name} (${bleDevice.address})")
+                _devices.update { devices.value + bleDevice }
             }
             .onEach { device ->
                 // Track state of each peripheral.

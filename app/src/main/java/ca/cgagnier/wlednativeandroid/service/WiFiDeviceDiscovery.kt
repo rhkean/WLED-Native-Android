@@ -82,7 +82,7 @@ class WiFiDeviceDiscovery(
         val deviceName = serviceInfo.serviceName ?: ""
         onDeviceDiscovered(
             WiFiDevice(
-                deviceIp,
+            deviceIp,
                 deviceName,
                 isCustomName = false,
                 isHidden = false,

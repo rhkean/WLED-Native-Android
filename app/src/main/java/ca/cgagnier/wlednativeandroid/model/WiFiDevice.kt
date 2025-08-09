@@ -3,11 +3,10 @@ package ca.cgagnier.wlednativeandroid.model
 import android.graphics.Color
 import ca.cgagnier.wlednativeandroid.R
 
-//@Parcelize
 class WiFiDevice(
     address: String,
-    name: String,
-    isCustomName: Boolean,
+    name: String = "",
+    isCustomName: Boolean = false,
     isHidden: Boolean,
     macAddress: String,
     brightness: Int = 0,
@@ -32,34 +31,33 @@ class WiFiDevice(
     hasBattery: Boolean = false,
     isBle: Boolean = false,
 ): Device(
-    address,
-    name,
-    isCustomName,
-    isHidden,
-    macAddress,
-    brightness,
-    color,
-    isPoweredOn,
-    isOnline,
-    isRefreshing,
-    networkBssid,
-    networkRssi,
-    networkSignal,
-    networkChannel,
-    isEthernet,
-    platformName,
-    version,
-    newUpdateVersionTagAvailable,
-    skipUpdateTag,
-    branch,
-    brand,
-    productName,
-    release,
-    batteryPercentage,
-    hasBattery,
-    isBle
+    address = address,
+    name = name,
+    isCustomName = isCustomName,
+    isHidden = isHidden,
+    macAddress = macAddress,
+    brightness = brightness,
+    color = color,
+    isPoweredOn = isPoweredOn,
+    isOnline = isOnline,
+    isRefreshing = isRefreshing,
+    networkBssid = networkBssid,
+    networkRssi = networkRssi,
+    networkSignal = networkSignal,
+    networkChannel = networkChannel,
+    isEthernet = isEthernet,
+    platformName = platformName,
+    version = version,
+    newUpdateVersionTagAvailable = newUpdateVersionTagAvailable,
+    skipUpdateTag = skipUpdateTag,
+    branch = branch,
+    brand = brand,
+    productName = productName,
+    release = release,
+    batteryPercentage = batteryPercentage,
+    hasBattery = hasBattery,
+    isBle = isBle
 ) {
-
     override fun getDeviceUrl(): String {
         return "http://$address"
     }
