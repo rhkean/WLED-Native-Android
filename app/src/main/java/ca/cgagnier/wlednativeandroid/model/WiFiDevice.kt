@@ -58,6 +58,35 @@ class WiFiDevice(
     hasBattery = hasBattery,
     isBle = isBle
 ) {
+    constructor(device: Device): this(
+        address = device.address,
+        name = device.name,
+        isCustomName = device.isCustomName,
+        isHidden = device.isHidden,
+        macAddress = device.macAddress,
+        brightness = device.brightness,
+        color = device.color,
+        isPoweredOn = device.isPoweredOn,
+        isOnline = device.isOnline,
+        isRefreshing = device.isRefreshing,
+        networkBssid = device.networkBssid,
+        networkRssi = device.networkRssi,
+        networkSignal = device.networkSignal,
+        networkChannel = device.networkChannel,
+        isEthernet = device.isEthernet,
+        platformName = device.platformName,
+        version = device.version,
+        newUpdateVersionTagAvailable = device.newUpdateVersionTagAvailable,
+        skipUpdateTag = device.skipUpdateTag,
+        branch = device.branch,
+        brand = device.brand,
+        productName = device.productName,
+        release = device.release,
+        batteryPercentage = device.batteryPercentage,
+        hasBattery = device.hasBattery,
+        isBle = device.isBle
+    )
+
     override fun getDeviceUrl(): String {
         return "http://$address"
     }

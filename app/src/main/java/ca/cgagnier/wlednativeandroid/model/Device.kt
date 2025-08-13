@@ -79,6 +79,50 @@ open class Device(
         }
     }
 
+    // Boilerplate data object method implementations
+    @Ignore
+    private val _hashCode = toString().hashCode()
+
+    override fun hashCode():Int { return _hashCode }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Device && _hashCode == other.hashCode()
+    }
+
+    override fun toString(): String {
+        val className = when(this) {
+            is BleDevice -> "BleDevice"
+            is WiFiDevice -> "WiFiDevice"
+            else -> "Device"
+        }
+        return "$className(" +
+                "address=$address," +
+                "name=$name," +
+                "isCustomName=$isCustomName," +
+                "isHidden=$isHidden," +
+                "macAddress=$macAddress," +
+                "brightness=$brightness," +
+                "color=$color," +
+                "isPoweredOn=$isPoweredOn," +
+                "isOnline=$isOnline," +
+                "isRefreshing=$isRefreshing," +
+                "networkBssid=$networkBssid," +
+                "networkRssi=$networkRssi," +
+                "networkSignal=$networkSignal," +
+                "networkChannel=$networkChannel," +
+                "isEthernet=$isEthernet," +
+                "platformName=$platformName," +
+                "version=$version," +
+                "newUpdateVersionTagAvailable=$newUpdateVersionTagAvailable," +
+                "skipUpdateTag=$skipUpdateTag," +
+                "branch=$branch," +
+                "brand=$brand," +
+                "productName=$productName," +
+                "release=$release," +
+                "batteryPercentage=$batteryPercentage," +
+                "hasBattery=$hasBattery," +
+                "isBle=$isBle)"
+    }
     open fun copy(
         address: String = this.address,
         name: String = this.name,
@@ -107,8 +151,8 @@ open class Device(
         hasBattery: Boolean = this.hasBattery,
         isBle: Boolean = this.isBle
     ): Device {
-        when (this) {
-            is BleDevice -> return BleDevice(
+        return when (this) {
+            is BleDevice -> BleDevice(
                 address,
                 name,
                 isCustomName,
@@ -134,10 +178,9 @@ open class Device(
                 release,
                 batteryPercentage,
                 hasBattery,
-                isBle,
-                peripheral = this.peripheral
-            )
-            is WiFiDevice -> return WiFiDevice(
+                isBle
+            ).also { it.peripheral = this.peripheral }
+            is WiFiDevice -> WiFiDevice(
                 address,
                 name,
                 isCustomName,
@@ -165,7 +208,7 @@ open class Device(
                 hasBattery,
                 isBle
             )
-            else -> return Device(
+            else -> Device(
                 address,
                 name,
                 isCustomName,
@@ -195,6 +238,33 @@ open class Device(
             )
         }
     }
+
+    operator fun component1() = address
+    operator fun component2() = name
+    operator fun component3() = isCustomName
+    operator fun component4() = isHidden
+    operator fun component5() = macAddress
+    operator fun component6() = brightness
+    operator fun component7() = color
+    operator fun component8() = isPoweredOn
+    operator fun component9() = isOnline
+    operator fun component10() = isRefreshing
+    operator fun component11() = networkBssid
+    operator fun component12() = networkRssi
+    operator fun component13() = networkSignal
+    operator fun component14() = networkChannel
+    operator fun component15() = isEthernet
+    operator fun component16() = platformName
+    operator fun component17() = version
+    operator fun component18() = newUpdateVersionTagAvailable
+    operator fun component19() = skipUpdateTag
+    operator fun component20() = branch
+    operator fun component21() = brand
+    operator fun component22() = productName
+    operator fun component23() = release
+    operator fun component24() = batteryPercentage
+    operator fun component25() = hasBattery
+    operator fun component26() = isBle
 
     companion object {
         const val UNKNOWN_VALUE = "__unknown__"

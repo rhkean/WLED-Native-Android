@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import no.nordicsemi.kotlin.ble.client.android.CentralManager
 import javax.inject.Inject
 
 private const val TAG = "DeviceListDetailViewModel"
@@ -40,7 +41,8 @@ class DeviceListDetailViewModel @Inject constructor(
     private val stateFactory: StateFactory,
     private val preferencesRepository: UserPreferencesRepository,
     private val blePermissions: BlePermissions,
-    networkManager: NetworkConnectivityManager
+    networkManager: NetworkConnectivityManager,
+    bleCentralManager: CentralManager
 ): AndroidViewModel(application) {
     val isWLEDCaptivePortal = networkManager.isWLEDCaptivePortal
 
@@ -71,6 +73,7 @@ class DeviceListDetailViewModel @Inject constructor(
 
 
     private val bleDiscoveryService = BleDeviceDiscovery(
+        centralManager = bleCentralManager,
         onDeviceDiscovered = {
             deviceDiscovered(it)
         },
