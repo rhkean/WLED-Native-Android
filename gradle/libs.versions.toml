@@ -37,7 +37,7 @@ runtimeLivedata = "1.8.3"
 semver4j = "3.1.0"
 webkit = "1.14.0"
 accompanistPermissions = "0.37.3"
-nordic-blek = "2.0.0-alpha06"
+nordic-blek = "2.0.0-alpha07"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
@@ -96,7 +96,6 @@ retrofit2-kotlin-coroutines-adapter = { module = "com.jakewharton.retrofit:retro
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
 nordic-blek-client-android = { group = "no.nordicsemi.kotlin.ble", name = "client-android", version.ref = "nordic-blek" }
-nordic-blek-client-core-android = { group = "no.nordicsemi.kotlin.ble", name = "client-core-android", version.ref = "nordic-blek" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" } #gmaven

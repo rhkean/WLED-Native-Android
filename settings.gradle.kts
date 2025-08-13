@@ -36,6 +36,7 @@ dependencyResolutionManagement {
             filter {
                 includeGroupAndSubgroups("androidx")
                 includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google.testing.platform")
             }
         }
         google {

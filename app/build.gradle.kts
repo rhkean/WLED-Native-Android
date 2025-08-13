@@ -124,7 +124,6 @@ dependencies {
     implementation(libs.multiplatformmarkdownrenderer)
     implementation(libs.multiplatformmarkdownrenderer.m3)
     implementation(libs.nordic.blek.client.android)
-    implementation(libs.nordic.blek.client.core.android)
     implementation(libs.okhttp)
     implementation(libs.protobuf.javalite)
     implementation(libs.retrofit)
