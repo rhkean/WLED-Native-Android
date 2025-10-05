@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.compose.compiler)
-    id("org.jetbrains.kotlin.kapt")
     id("kotlin-parcelize")
 }
 
@@ -68,10 +67,6 @@ android {
     ndkVersion = "29.0.14033849 rc4"
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     androidTestImplementation(composeBom)
@@ -124,7 +119,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit2.kotlin.coroutines.adapter)
     implementation(libs.semver4j)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     ksp(libs.moshi.kotlin.codegen)
