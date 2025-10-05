@@ -13,12 +13,12 @@ plugins {
 }
 
 android {
-    compileSdk = 35
 
+    compileSdk = 36
     defaultConfig {
         applicationId = "ca.cgagnier.wlednativeandroid"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 45
         versionName = "6.0.0"
 
@@ -66,6 +66,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     namespace = "ca.cgagnier.wlednativeandroid"
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "29.0.14033849 rc4"
     kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
