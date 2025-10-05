@@ -12,12 +12,12 @@ plugins {
 }
 
 android {
-    compileSdk = 35
 
+    compileSdk = 36
     defaultConfig {
         applicationId = "ca.cgagnier.wlednativeandroid"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 40
         versionName = "5.0.0"
         resourceConfigurations += listOf("en", "fr")
@@ -64,6 +64,8 @@ android {
         freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
     }
     namespace = "ca.cgagnier.wlednativeandroid"
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "29.0.14033849 rc4"
 }
 
 kapt {
