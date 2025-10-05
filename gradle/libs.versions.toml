@@ -1,6 +1,6 @@
 [versions]
 agp = "8.12.3"
-composeBom = "2025.04.01"
+composeBom = "2025.06.01"
 converterMoshi = "3.0.0"
 core = "4.6.2"
 coreKtx = "1.17.0"
