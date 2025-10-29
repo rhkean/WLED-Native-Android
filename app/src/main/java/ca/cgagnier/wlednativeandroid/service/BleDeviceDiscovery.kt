@@ -2,8 +2,8 @@ package ca.cgagnier.wlednativeandroid.service
 
 import android.util.Log
 import ca.cgagnier.wlednativeandroid.BlePermissions
-import ca.cgagnier.wlednativeandroid.model.BleDevice
 import ca.cgagnier.wlednativeandroid.model.Device
+import ca.cgagnier.wlednativeandroid.model.DeviceType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -65,16 +65,15 @@ class BleDeviceDiscovery(
             }
             .distinctByPeripheral()
             .map {
-                BleDevice(
+                Device(
                     address = it.peripheral.address,
                     name = it.peripheral.name ?: it.peripheral.address,
                     isCustomName = false,
                     isHidden = false,
                     macAddress = it.peripheral.address,
-                    isBle = true,
+                    deviceType = DeviceType.BLE,
                     networkRssi = it.rssi,
-                    //peripheral = it.peripheral
-                ).apply { this.peripheral = it.peripheral}
+                )
             }
             .filter { _peripherals.value.contains(it.peripheral) }
             .onEach { device ->

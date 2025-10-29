@@ -1,19 +1,22 @@
 package ca.cgagnier.wlednativeandroid.model
 
 import android.graphics.Color
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import ca.cgagnier.wlednativeandroid.R
 import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 @Entity
-open class Device(
+@Parcelize
+data class Device(
     @PrimaryKey
     val address: String,
-    val name: String = "",
-    val isCustomName: Boolean = false,
+    val name: String,
+    val isCustomName: Boolean,
     val isHidden: Boolean,
     @ColumnInfo(defaultValue = UNKNOWN_VALUE)
     val macAddress: String,
@@ -52,19 +55,34 @@ open class Device(
     val batteryPercentage: Double = 0.0,
     @ColumnInfo(defaultValue = "0")
     val hasBattery: Boolean = false,
-    @ColumnInfo(defaultValue = "0")
-    val isBle: Boolean = false,
-) {
+    @ColumnInfo(defaultValue = "UNKNOWN")
+    val deviceType: DeviceType = DeviceType.UNKNOWN
+): Parcelable {
     @Ignore
     @IgnoredOnParcel
     var isSliding = false
-    open fun getDeviceUrl(): String { return "" }
-    open fun getNetworkStrengthImage(): Int {
-        return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
+
+    fun getDeviceUrl(): String {
+        return "http://$address"
     }
-    open fun isAPMode():Boolean { return false }
-    open fun hasUpdateAvailable(): Boolean {
-        return newUpdateVersionTagAvailable != ""
+
+    fun getNetworkStrengthImage(): Int {
+        if (!isOnline) {
+            return R.drawable.twotone_signal_wifi_connected_no_internet_0_24
+        }
+        if (networkRssi >= -50) {
+            return R.drawable.twotone_signal_wifi_4_bar_24
+        }
+        if (networkRssi >= -70) {
+            return R.drawable.twotone_signal_wifi_3_bar_24
+        }
+        if (networkRssi >= -80) {
+            return R.drawable.twotone_signal_wifi_2_bar_24
+        }
+        if (networkRssi >= -100) {
+            return R.drawable.twotone_signal_wifi_1_bar_24
+        }
+        return R.drawable.twotone_signal_wifi_0_bar_24
     }
     fun getBatteryPercentageImage(): Int {
         return when {
@@ -79,199 +97,20 @@ open class Device(
         }
     }
 
-    // Boilerplate data object method implementations
-    @Ignore
-    private val _hashCode = toString().hashCode()
-
-    override fun hashCode():Int { return _hashCode }
-
-    override fun equals(other: Any?): Boolean {
-        return other is Device && _hashCode == other.hashCode()
+    fun hasUpdateAvailable(): Boolean {
+        return newUpdateVersionTagAvailable != ""
     }
 
-    override fun toString(): String {
-        val className = when(this) {
-            is BleDevice -> "BleDevice"
-            is WiFiDevice -> "WiFiDevice"
-            else -> "Device"
-        }
-        return "$className(" +
-                "address=$address," +
-                "name=$name," +
-                "isCustomName=$isCustomName," +
-                "isHidden=$isHidden," +
-                "macAddress=$macAddress," +
-                "brightness=$brightness," +
-                "color=$color," +
-                "isPoweredOn=$isPoweredOn," +
-                "isOnline=$isOnline," +
-                "isRefreshing=$isRefreshing," +
-                "networkBssid=$networkBssid," +
-                "networkRssi=$networkRssi," +
-                "networkSignal=$networkSignal," +
-                "networkChannel=$networkChannel," +
-                "isEthernet=$isEthernet," +
-                "platformName=$platformName," +
-                "version=$version," +
-                "newUpdateVersionTagAvailable=$newUpdateVersionTagAvailable," +
-                "skipUpdateTag=$skipUpdateTag," +
-                "branch=$branch," +
-                "brand=$brand," +
-                "productName=$productName," +
-                "release=$release," +
-                "batteryPercentage=$batteryPercentage," +
-                "hasBattery=$hasBattery," +
-                "isBle=$isBle)"
+    fun isAPMode(): Boolean {
+        return address == DEFAULT_WLED_AP_IP
     }
-    open fun copy(
-        address: String = this.address,
-        name: String = this.name,
-        isCustomName: Boolean = this.isCustomName,
-        isHidden: Boolean = this.isHidden,
-        macAddress: String = this.macAddress,
-        brightness: Int = this.brightness,
-        color: Int = this.color,
-        isPoweredOn: Boolean = this.isPoweredOn,
-        isOnline: Boolean = this.isOnline,
-        isRefreshing: Boolean = this.isRefreshing,
-        networkBssid: String = this.networkBssid,
-        networkRssi: Int = this.networkRssi,
-        networkSignal: Int = this.networkSignal,
-        networkChannel: Int = this.networkChannel,
-        isEthernet: Boolean = this.isEthernet,
-        platformName: String = this.platformName,
-        version: String = this.version,
-        newUpdateVersionTagAvailable: String = this.newUpdateVersionTagAvailable,
-        skipUpdateTag: String = this.skipUpdateTag,
-        branch: Branch = this.branch,
-        brand: String = this.brand,
-        productName: String = this.productName,
-        release: String = this.release,
-        batteryPercentage: Double = this.batteryPercentage,
-        hasBattery: Boolean = this.hasBattery,
-        isBle: Boolean = this.isBle
-    ): Device {
-        return when (this) {
-            is BleDevice -> BleDevice(
-                address,
-                name,
-                isCustomName,
-                isHidden,
-                macAddress,
-                brightness,
-                color,
-                isPoweredOn,
-                isOnline,
-                isRefreshing,
-                networkBssid,
-                networkRssi,
-                networkSignal,
-                networkChannel,
-                isEthernet,
-                platformName,
-                version,
-                newUpdateVersionTagAvailable,
-                skipUpdateTag,
-                branch,
-                brand,
-                productName,
-                release,
-                batteryPercentage,
-                hasBattery,
-                isBle
-            ).also { it.peripheral = this.peripheral }
-            is WiFiDevice -> WiFiDevice(
-                address,
-                name,
-                isCustomName,
-                isHidden,
-                macAddress,
-                brightness,
-                color,
-                isPoweredOn,
-                isOnline,
-                isRefreshing,
-                networkBssid,
-                networkRssi,
-                networkSignal,
-                networkChannel,
-                isEthernet,
-                platformName,
-                version,
-                newUpdateVersionTagAvailable,
-                skipUpdateTag,
-                branch,
-                brand,
-                productName,
-                release,
-                batteryPercentage,
-                hasBattery,
-                isBle
-            )
-            else -> Device(
-                address,
-                name,
-                isCustomName,
-                isHidden,
-                macAddress,
-                brightness,
-                color,
-                isPoweredOn,
-                isOnline,
-                isRefreshing,
-                networkBssid,
-                networkRssi,
-                networkSignal,
-                networkChannel,
-                isEthernet,
-                platformName,
-                version,
-                newUpdateVersionTagAvailable,
-                skipUpdateTag,
-                branch,
-                brand,
-                productName,
-                release,
-                batteryPercentage,
-                hasBattery,
-                isBle
-            )
-        }
-    }
-
-    operator fun component1() = address
-    operator fun component2() = name
-    operator fun component3() = isCustomName
-    operator fun component4() = isHidden
-    operator fun component5() = macAddress
-    operator fun component6() = brightness
-    operator fun component7() = color
-    operator fun component8() = isPoweredOn
-    operator fun component9() = isOnline
-    operator fun component10() = isRefreshing
-    operator fun component11() = networkBssid
-    operator fun component12() = networkRssi
-    operator fun component13() = networkSignal
-    operator fun component14() = networkChannel
-    operator fun component15() = isEthernet
-    operator fun component16() = platformName
-    operator fun component17() = version
-    operator fun component18() = newUpdateVersionTagAvailable
-    operator fun component19() = skipUpdateTag
-    operator fun component20() = branch
-    operator fun component21() = brand
-    operator fun component22() = productName
-    operator fun component23() = release
-    operator fun component24() = batteryPercentage
-    operator fun component25() = hasBattery
-    operator fun component26() = isBle
 
     companion object {
         const val UNKNOWN_VALUE = "__unknown__"
         const val DEFAULT_WLED_AP_IP = "4.3.2.1"
 
-        fun getDefaultAPDevice(): WiFiDevice {
-            return WiFiDevice(
+        fun getDefaultAPDevice(): Device {
+            return Device(
                 address = DEFAULT_WLED_AP_IP,
                 name = "WLED AP Mode",
                 isCustomName = true,
@@ -282,8 +121,8 @@ open class Device(
             )
         }
 
-        fun getPreviewWiFiDevice(): WiFiDevice {
-            return WiFiDevice(
+        fun getPreviewDevice(): Device {
+            return Device(
                 "10.0.0.1",
                 "Preview Device",
                 isCustomName = false,

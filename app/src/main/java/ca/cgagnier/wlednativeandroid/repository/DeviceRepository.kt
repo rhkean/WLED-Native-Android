@@ -1,38 +1,27 @@
 package ca.cgagnier.wlednativeandroid.repository
 
 import androidx.annotation.WorkerThread
-import ca.cgagnier.wlednativeandroid.model.BleDevice
 import ca.cgagnier.wlednativeandroid.model.Device
-import ca.cgagnier.wlednativeandroid.model.WiFiDevice
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
-    val allDevices: Flow<List<Device>> =
-        deviceDao
-            .getAlphabetizedDevices()
-            .mapDeviceListFlow()
-    val allDevicesOfflineLast: Flow<List<Device>> =
-        deviceDao
-            .getAlphabetizedDevicesOfflineLast()
-            .mapDeviceListFlow()
+    val allDevices: Flow<List<Device>> = deviceDao.getAlphabetizedDevices()
+    val allDevicesOfflineLast: Flow<List<Device>> = deviceDao.getAlphabetizedDevicesOfflineLast()
 
     @WorkerThread
     fun getAllDevices(): List<Device> {
-        return deviceDao
-            .getAllDevices()
-            .mapDeviceList()
+        return deviceDao.getAllDevices()
     }
 
     @WorkerThread
     fun findLiveDeviceByAddress(address: String): Flow<Device?> {
-        return deviceDao.findLiveDeviceByAddress(address).mapNullableDeviceFlow()
+        return deviceDao.findLiveDeviceByAddress(address)
     }
 
     @WorkerThread
     suspend fun findDeviceByMacAddress(address: String): Device? {
-        return deviceDao.findDeviceByMacAddress(address)?.mapDevice()
+        return deviceDao.findDeviceByMacAddress(address)
     }
 
     @WorkerThread
@@ -56,27 +45,5 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
 
     suspend fun hasHiddenDevices(): Boolean {
         return deviceDao.countHiddenDevices() > 0
-    }
-}
-
-fun Flow<List<Device>>.mapDeviceListFlow(): Flow<List<Device>> {
-    return this.map { list ->
-        list.mapDeviceList()
-    }
-}
-fun List<Device>.mapDeviceList(): List<Device> {
-    return this.map {device ->
-        device.mapDevice()
-    }
-}
-fun Device.mapDevice(): Device {
-    return if(this.isBle)
-        BleDevice(this)
-    else
-        WiFiDevice(this)
-}
-fun Flow<Device?>.mapNullableDeviceFlow(): Flow<Device?> {
-    return this.map { device ->
-        device?.mapDevice()
     }
 }
